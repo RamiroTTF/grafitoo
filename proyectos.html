@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyectos — Grafito</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #080808;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── Header ── */
+        header {
+            padding: 28px 8%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            font-family: 'Arial Black', Arial, sans-serif;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover { color: #fff; }
+
+        .back-btn .arrow {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+            border-left: 1.5px solid currentColor;
+            border-bottom: 1.5px solid currentColor;
+            transform: rotate(45deg);
+        }
+
+        /* ── Título ── */
+        .hero-text {
+            text-align: center;
+            padding: 48px 8% 56px;
+            opacity: 0;
+            animation: fadeUp 0.7s ease 0.1s forwards;
+        }
+
+        .hero-text h1 {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: clamp(32px, 5vw, 62px);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.15;
+        }
+
+        .hero-text h1 em { font-style: italic; }
+
+        .hero-text p {
+            margin-top: 14px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.38);
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Carrusel ── */
+        .carousel-wrap {
+            position: relative;
+            width: 100%;
+            padding-bottom: 72px;
+        }
+
+        .carousel-scene {
+            perspective: 1100px;
+            position: relative;
+            width: 100%;
+            height: 480px;
+        }
+
+        /* Carta base */
+        .c-card {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 248px;
+            height: 374px;
+            border-radius: 18px;
+            overflow: hidden;
+            transition:
+                transform 0.68s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                opacity   0.68s ease,
+                box-shadow 0.68s ease;
+            user-select: none;
+        }
+
+        /* Posiciones */
+        .pos-far-left {
+            transform: translate(calc(-50% - 420px), -50%) rotateY(44deg) scale(0.62);
+            opacity: 0.32;
+            z-index: 1;
+            cursor: pointer;
+        }
+        .pos-left {
+            transform: translate(calc(-50% - 228px), -50%) rotateY(30deg) scale(0.81);
+            opacity: 0.68;
+            z-index: 2;
+            cursor: pointer;
+        }
+        .pos-center {
+            transform: translate(-50%, -50%) rotateY(0deg) scale(1);
+            opacity: 1;
+            z-index: 5;
+            box-shadow: 0 32px 90px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.07);
+            cursor: default;
+        }
+        .pos-right {
+            transform: translate(calc(-50% + 228px), -50%) rotateY(-30deg) scale(0.81);
+            opacity: 0.68;
+            z-index: 2;
+            cursor: pointer;
+        }
+        .pos-far-right {
+            transform: translate(calc(-50% + 420px), -50%) rotateY(-44deg) scale(0.62);
+            opacity: 0.32;
+            z-index: 1;
+            cursor: pointer;
+        }
+        .pos-hidden {
+            transform: translate(-50%, -50%) scale(0.15);
+            opacity: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Imagen de la carta */
+        .c-card-img {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .c-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Gradientes de placeholder */
+        .c-card:nth-child(1) .c-card-img { background: linear-gradient(160deg, #1a0000 0%, #7f1d1d 45%, #dc2626 100%); }
+        .c-card:nth-child(2) .c-card-img { background: linear-gradient(160deg, #0c0800 0%, #92400e 45%, #d97706 100%); }
+        .c-card:nth-child(3) .c-card-img { background: linear-gradient(160deg, #111 0%, #374151 45%, #9ca3af 100%); }
+        .c-card:nth-child(4) .c-card-img { background: linear-gradient(160deg, #000d1a 0%, #0e4e7c 45%, #38bdf8 100%); }
+        .c-card:nth-child(5) .c-card-img { background: linear-gradient(160deg, #0d0014 0%, #5b21b6 45%, #a78bfa 100%); }
+        .c-card:nth-child(6) .c-card-img { background: linear-gradient(160deg, #0a0500 0%, #9a3412 45%, #fb923c 100%); }
+
+        /* Overlay inferior */
+        .c-card-overlay {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 48px 20px 22px;
+            background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, transparent 100%);
+        }
+
+        .c-card-tag {
+            display: block;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 6px;
+        }
+
+        .c-card-title {
+            font-family: Georgia, serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.3;
+        }
+
+        /* ── Navegación ── */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.7);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+        }
+
+        .nav-prev { left: 4%; }
+        .nav-next { right: 4%; }
+
+        /* ── Dots ── */
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 36px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.22);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+
+        .dot.active {
+            background: #fff;
+            width: 22px;
+            border-radius: 3px;
+        }
+
+        /* ── Animaciones de entrada ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Footer ── */
+        footer {
+            padding: 40px 8%;
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .footer-home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.45);
+            padding: 13px 32px;
+            border: 1px solid rgba(255,255,255,0.12);
+            transition: all 0.25s ease;
+        }
+
+        .footer-home-btn:hover {
+            color: #fff;
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        .footer-arrow {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+            border-left: 1.5px solid currentColor;
+            border-bottom: 1.5px solid currentColor;
+            transform: rotate(45deg);
+        }
+
+        /* ── Tablet ── */
+        @media (max-width: 900px) {
+            .carousel-scene { height: 420px; }
+            .c-card { width: 210px; height: 316px; }
+            .pos-far-left  { transform: translate(calc(-50% - 340px), -50%) rotateY(44deg) scale(0.6);  opacity: 0.25; }
+            .pos-left      { transform: translate(calc(-50% - 190px), -50%) rotateY(30deg) scale(0.78); opacity: 0.6;  }
+            .pos-right     { transform: translate(calc(-50% + 190px), -50%) rotateY(-30deg) scale(0.78); opacity: 0.6; }
+            .pos-far-right { transform: translate(calc(-50% + 340px), -50%) rotateY(-44deg) scale(0.6); opacity: 0.25; }
+        }
+
+        /* ── Mobile ── */
+        @media (max-width: 600px) {
+            .hero-text { padding: 36px 6% 44px; }
+            .carousel-scene { height: 380px; }
+            .c-card { width: 200px; height: 300px; border-radius: 14px; }
+            .pos-far-left  { opacity: 0; pointer-events: none; transform: translate(-50%, -50%) scale(0.1); }
+            .pos-far-right { opacity: 0; pointer-events: none; transform: translate(-50%, -50%) scale(0.1); }
+            .pos-left      { transform: translate(calc(-50% - 150px), -50%) rotateY(25deg) scale(0.75); opacity: 0.5; }
+            .pos-right     { transform: translate(calc(-50% + 150px), -50%) rotateY(-25deg) scale(0.75); opacity: 0.5; }
+            .nav-prev { left: 1%; }
+            .nav-next { right: 1%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="Index.html" class="logo">GRAFITO</a>
+        <a href="Index.html" class="back-btn">
+            <span class="arrow"></span> Volver
+        </a>
+    </header>
+
+    <div class="hero-text">
+        <h1>Trabajos <em>seleccionados.</em></h1>
+        <p>Cada proyecto, un trazo único.</p>
+    </div>
+
+    <div class="carousel-wrap">
+        <div class="carousel-scene">
+
+            <div class="c-card">
+                <div class="c-card-img"></div>
+                <div class="c-card-overlay">
+                    <span class="c-card-tag">Branding</span>
+                    <h3 class="c-card-title">Proyecto 1</h3>
+                </div>
+            </div>
+
+            <div class="c-card">
+                <div class="c-card-img"></div>
+                <div class="c-card-overlay">
+                    <span class="c-card-tag">Editorial</span>
+                    <h3 class="c-card-title">Proyecto 2</h3>
+                </div>
+            </div>
+
+            <div class="c-card">
+                <div class="c-card-img"></div>
+                <div class="c-card-overlay">
+                    <span class="c-card-tag">Web</span>
+                    <h3 class="c-card-title">Proyecto 3</h3>
+                </div>
+            </div>
+
+            <div class="c-card">
+                <div class="c-card-img"></div>
+                <div class="c-card-overlay">
+                    <span class="c-card-tag">Branding</span>
+                    <h3 class="c-card-title">Proyecto 4</h3>
+                </div>
+            </div>
+
+            <div class="c-card">
+                <div class="c-card-img"></div>
+                <div class="c-card-overlay">
+                    <span class="c-card-tag">Editorial</span>
+                    <h3 class="c-card-title">Proyecto 5</h3>
+                </div>
+            </div>
+
+            <div class="c-card">
+                <div class="c-card-img"></div>
+                <div class="c-card-overlay">
+                    <span class="c-card-tag">Web</span>
+                    <h3 class="c-card-title">Proyecto 6</h3>
+                </div>
+            </div>
+
+        </div>
+
+        <button class="nav-btn nav-prev" aria-label="Anterior">&#8249;</button>
+        <button class="nav-btn nav-next" aria-label="Siguiente">&#8250;</button>
+
+        <div class="carousel-dots"></div>
+    </div>
+
+    <footer>
+        <a href="Index.html" class="footer-home-btn">
+            <span class="footer-arrow"></span> Volver al inicio
+        </a>
+    </footer>
+
+    <script>
+    const cards   = Array.from(document.querySelectorAll('.c-card'));
+    const dotsWrap = document.querySelector('.carousel-dots');
+    const N = cards.length;
+    let active = 0;
+    let animating = false;
+
+    // Crear dots
+    cards.forEach((_, i) => {
+        const d = document.createElement('button');
+        d.className = 'dot' + (i === 0 ? ' active' : '');
+        d.addEventListener('click', () => goTo(i));
+        dotsWrap.appendChild(d);
+    });
+
+    const dots = Array.from(dotsWrap.querySelectorAll('.dot'));
+
+    function posKey(diff) {
+        if (diff === 0)                              return 'pos-center';
+        if (diff === 1  || diff === -(N - 1))       return 'pos-right';
+        if (diff === -1 || diff ===  (N - 1))       return 'pos-left';
+        if (diff === 2  || diff === -(N - 2))       return 'pos-far-right';
+        if (diff === -2 || diff ===  (N - 2))       return 'pos-far-left';
+        return 'pos-hidden';
+    }
+
+    function update() {
+        cards.forEach((card, i) => {
+            let diff = i - active;
+            if (diff >  N / 2) diff -= N;
+            if (diff < -N / 2) diff += N;
+
+            card.className = 'c-card ' + posKey(diff);
+        });
+
+        dots.forEach((d, i) => d.classList.toggle('active', i === active));
+    }
+
+    function goTo(index) {
+        if (animating || index === active) return;
+        animating = true;
+        active = ((index % N) + N) % N;
+        update();
+        setTimeout(() => { animating = false; }, 680);
+    }
+
+    function next() { goTo(active + 1); }
+    function prev() { goTo(active - 1); }
+
+    // Clicks en cartas laterales
+    cards.forEach((card, i) => {
+        card.addEventListener('click', () => {
+            const cls = card.className;
+            if (cls.includes('pos-left') || cls.includes('pos-far-left'))  prev();
+            if (cls.includes('pos-right') || cls.includes('pos-far-right')) next();
+        });
+    });
+
+    // Botones
+    document.querySelector('.nav-prev').addEventListener('click', prev);
+    document.querySelector('.nav-next').addEventListener('click', next);
+
+    // Teclado
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight') next();
+        if (e.key === 'ArrowLeft')  prev();
+    });
+
+    // Touch / swipe
+    let touchX = 0;
+    document.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+    document.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - touchX;
+        if (Math.abs(dx) > 48) dx < 0 ? next() : prev();
+    });
+
+    // Init
+    update();
+    </script>
+
+</body>
+</html>
